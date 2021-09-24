@@ -1,17 +1,28 @@
-typedef struct arv Arv;
+typedef struct arvvar Arvvar;
 
-void menu(void);
+void menu();
 
-int arv_vazia(Arv* a);
+int arvv_vazia(Arvvar* a);
 
-Arv* arv_libera(Arv* a);
+void arvv_libera(Arvvar* a);
 
-Arv* arv_criaraiz();
+Arvvar* arvv_criaraiz();
 
-Arv* arv_insere(Arv* a, int lado);
+void arvv_insere(Arvvar* a);
 
-Arv * arv_busca(Arv* a, char *c);
+Arvvar * arvv_busca(Arvvar* a, char *c);
 
-void arv_imprime(Arv* a);
+void arvv_imprime(Arvvar* a);
+
+
+
+
+
+
+
+
+
+
+
 
 

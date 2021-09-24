@@ -3,87 +3,83 @@
 #include <string.h>
 #include "arv.h"
 
-struct arv{
+typedef struct arvvar{
 	char * pasta;
-	struct arv *esq;
-	struct arv *dir;
-};
+	struct arvvar *prim;
+	struct arvvar *prox;
+} Arvvar;
 
 void menu(){
+	printf("0) SAIR;\n");
 	printf("1) Criar uma pasta raiz;\n");
 	printf("2) Inserir uma sub-pasta;\n");
-	printf("3) Remover uma subpasta;\n");
-	printf("4) Imprimir a estrutura de pastas;\n->");
+	printf("3) Imprimir a estrutura de pastas;\n->");
 }
 
-int arv_vazia(Arv* a){
+int arvv_vazia(Arvvar* a){
 	return a == NULL;
 }
 
-Arv* arv_libera(Arv* a){
-	if (!arv_vazia(a)){
-		arv_libera(a->esq);
-		arv_libera(a->dir);
-		free(a);	
+void arvv_libera(Arvvar* a){
+	Arvvar * filho = a->prim;
+	
+	while(filho != NULL){
+		Arvvar * aux = filho->prox;
+		arvv_libera(filho);
+		filho=aux;
 	}
-	return NULL;
+	free(a);
 }
 
-Arv* arv_criaraiz(){
+Arvvar* arvv_criaraiz(){
 	char* nome = (char*) malloc(41*sizeof(char));
-	printf("Digite o nome da pasta raiz: ");
+	printf("Digite o nome da pasta: ");
 	scanf(" %40[^\n]", nome);
 	
-	Arv* a = (Arv*) malloc(sizeof(Arv));
+	Arvvar* a = (Arvvar*) malloc(sizeof(Arvvar));
 	a->pasta = nome;
-	a->esq = NULL;
-	a->dir = NULL;
+	a->prim = NULL;
+	a->prox = NULL;
 	
 	return a;
 }
 
-Arv* arv_insere(Arv* a, int lado){
+void arvv_insere(Arvvar* a){	
+	Arvvar* subarv = (Arvvar*) malloc(sizeof(Arvvar));	
 	
-	if(lado == 1 || lado == 2 ){
-		char* nome = (char*) malloc(41*sizeof(char));
-		printf("Digite o nome da pasta: ");
-		scanf(" %40[^\n]", nome);
-		
-		Arv* novo = (Arv*) malloc(sizeof(Arv));
-		novo->pasta = nome;
-		novo->esq = NULL;
-		novo->dir = NULL;
-		
-		if(lado == 1){
-			a->esq = novo;
-		} else if (lado == 2){
-			a->dir = novo;
-		} 	
-	}else {
-		printf("Lado errado\n");
-	}
+	subarv = arvv_criaraiz();
 	
+	subarv->prox = a->prim;
+	
+	a->prim = subarv;
+
 }
 
-Arv * arv_busca(Arv* a, char *c){
-	if (!arv_vazia(a)){
-		if(strcmp(c, a->pasta) == 0){
+Arvvar * arvv_busca(Arvvar* a, char *pasta){
+	Arvvar * filho;
+	if (!arvv_vazia(a)){
+		if(strcmp(pasta, a->pasta) == 0){
 			return a;
-		} else if (arv_busca(a->esq, c) != NULL){
-			return a->esq;
-		} else if (arv_busca(a->dir, c) != NULL){
-			return a->dir;
+		} else {
+			for(filho= a->prim; filho != NULL; filho=filho->prox){
+				if(arvv_busca(filho, pasta) != NULL){
+					return filho;
+				}
+			}
 		}
 	}
 	return NULL;
 }
 
-void arv_imprime(Arv* a){
+void arvv_imprime(Arvvar* a){
+	Arvvar * p;
 	printf("<");
-	if (!arv_vazia(a)){
+	if (!arvv_vazia(a)){
 		printf("%s ", a->pasta);
-		arv_imprime(a->esq);
-		arv_imprime(a->dir);
+		
+		for(p= a->prim; p != NULL; p=p->prox){
+			arvv_imprime(p);
+		}
 	}
 	printf(">");
 }
